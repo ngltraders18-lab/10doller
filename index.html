@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGL TRADER Presents | The $10 Algorithmic Apex Strategy</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Space Grotesk & JetBrains Mono & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for sharp futuristic icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        cyber: {
+                            black: '#030508',
+                            dark: '#080C14',
+                            card: '#0D1320',
+                            cyan: '#00F0FF',
+                            emerald: '#00FF88',
+                            purple: '#7000FF',
+                            border: 'rgba(0, 240, 255, 0.15)'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 15px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(0, 240, 255, 0.2)' },
+                            '100%': { boxShadow: '0 0 30px rgba(0, 255, 136, 0.6), inset 0 0 20px rgba(0, 255, 136, 0.4)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-cyber-black text-slate-200 font-sans antialiased overflow-x-hidden selection:bg-cyber-cyan selection:text-cyber-black">
+
+    <!-- Interactive Futuristic Particle & Grid Canvas Background -->
+    <canvas id="bg-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-60"></canvas>
+
+    <!-- Custom Notification Toast (Replaces alert()) -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Top Live Ticker Bar -->
+    <div class="relative z-20 bg-cyber-dark/90 border-b border-cyber-border backdrop-blur-md py-1.5 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center space-x-2 text-cyber-emerald">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-emerald opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-cyber-emerald"></span>
+                </span>
+                <span class="font-bold tracking-wider" data-i18n="ticker_status">SYSTEM ONLINE // PROTOCOL V4.2</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-8 text-slate-400">
+                <span>XAUUSD <span class="text-cyber-emerald">+4.82%</span></span>
+                <span>BTCUSD <span class="text-cyber-cyan">+6.14%</span></span>
+                <span>NAS100 <span class="text-cyber-emerald">+3.49%</span></span>
+                <span>EURUSD <span class="text-cyber-cyan">+1.92%</span></span>
+            </div>
+            <div class="text-cyber-cyan font-semibold">
+                <i class="fa-solid fa-bolt mr-1"></i> <span data-i18n="ticker_tagline">ONE STRATEGY TO END THE SEARCH</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header with Multi-Page Tabs & Language Switcher -->
+    <header class="sticky top-0 z-30 bg-cyber-black/85 backdrop-blur-xl border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2">
+            <!-- Brand Logo -->
+            <button onclick="navigatePage('home')" class="flex items-center gap-3 group text-left cursor-pointer">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyber-cyan to-cyber-emerald p-[1px] shadow-lg shadow-cyber-cyan/20 group-hover:shadow-cyber-cyan/50 transition-all">
+                    <div class="w-full h-full bg-cyber-black rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-chart-line text-cyber-cyan text-lg group-hover:scale-110 transition-transform"></i>
+                    </div>
+                </div>
+                <div>
+                    <span class="font-display font-bold text-lg sm:text-xl tracking-wider text-white block leading-none">NGL TRADER</span>
+                    <span class="font-mono text-[10px] tracking-[0.25em] text-cyber-cyan uppercase block mt-1" data-i18n="brand_sub">Presents</span>
+                </div>
+            </button>
+
+            <!-- Multi-Page Navigation Links -->
+            <nav class="hidden lg:flex items-center space-x-1 bg-white/[0.03] p-1.5 rounded-xl border border-white/10 text-xs font-mono">
+                <button onclick="navigatePage('home')" data-page-btn="home" class="page-nav-btn px-3.5 py-2 rounded-lg bg-cyber-cyan/15 text-cyber-cyan font-bold transition-all cursor-pointer" data-i18n="nav_home">01. HOME</button>
+                <button onclick="navigatePage('strategy')" data-page-btn="strategy" class="page-nav-btn px-3.5 py-2 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer" data-i18n="nav_strategy">02. STRATEGY INTEL</button>
+                <button onclick="navigatePage('profits')" data-page-btn="profits" class="page-nav-btn px-3.5 py-2 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer" data-i18n="nav_profits">03. STUDENT PROFITS</button>
+                <button onclick="navigatePage('simulator')" data-page-btn="simulator" class="page-nav-btn px-3.5 py-2 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer" data-i18n="nav_math">04. MILLIONAIRE MATH</button>
+                <button onclick="navigatePage('faq')" data-page-btn="faq" class="page-nav-btn px-3.5 py-2 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer" data-i18n="nav_faq">05. FAQ & RULES</button>
+            </nav>
+
+            <!-- Language Toggle & CTA Button -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button id="lang-toggle-btn" onclick="toggleLanguage()" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-cyber-cyan/30 text-cyber-cyan font-mono text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer" title="Switch Language">
+                    <i class="fa-solid fa-language text-sm"></i>
+                    <span id="lang-label">हिंदी / EN</span>
+                </button>
+                <button onclick="openCheckoutModal()" class="relative inline-flex items-center justify-center px-4 sm:px-5 py-2.5 font-mono text-xs sm:text-sm font-bold text-cyber-black bg-gradient-to-r from-cyber-cyan to-cyber-emerald rounded-lg overflow-hidden shadow-lg shadow-cyber-cyan/25 hover:shadow-cyber-emerald/40 hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                    <span data-i18n="nav_cta">UNLOCK $10</span>
+                    <i class="fa-solid fa-arrow-right ml-1.5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Horizontal Page Bar -->
+        <div class="lg:hidden flex items-center gap-2 overflow-x-auto px-4 py-2 border-t border-white/5 bg-cyber-dark/90 font-mono text-[11px] no-scrollbar">
+            <button onclick="navigatePage('home')" data-page-btn="home" class="page-nav-btn shrink-0 px-3 py-1.5 rounded-lg bg-cyber-cyan/15 text-cyber-cyan font-bold" data-i18n="nav_home">01. HOME</button>
+            <button onclick="navigatePage('strategy')" data-page-btn="strategy" class="page-nav-btn shrink-0 px-3 py-1.5 rounded-lg text-slate-300" data-i18n="nav_strategy">02. STRATEGY INTEL</button>
+            <button onclick="navigatePage('profits')" data-page-btn="profits" class="page-nav-btn shrink-0 px-3 py-1.5 rounded-lg text-slate-300" data-i18n="nav_profits">03. STUDENT PROFITS</button>
+            <button onclick="navigatePage('simulator')" data-page-btn="simulator" class="page-nav-btn shrink-0 px-3 py-1.5 rounded-lg text-slate-300" data-i18n="nav_math">04. MILLIONAIRE MATH</button>
+            <button onclick="navigatePage('faq')" data-page-btn="faq" class="page-nav-btn shrink-0 px-3 py-1.5 rounded-lg text-slate-300" data-i18n="nav_faq">05. FAQ & RULES</button>
+        </div>
+    </header>
+
+    <!-- MULTI-PAGE VIEW CONTAINER -->
+    <main class="relative z-10 min-h-[80vh]">
+
+        <!-- ==================== PAGE 1: HOME OVERVIEW ==================== -->
+        <div id="page-home" class="page-view">
+            <section class="pt-12 pb-20 lg:pt-20 lg:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Hero Left Copy -->
+                    <div class="lg:col-span-7 space-y-7 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan font-mono text-xs uppercase tracking-widest">
+                            <i class="fa-solid fa-crosshairs animate-spin" style="animation-duration: 8s;"></i>
+                            <span data-i18n="hero_badge">NGL TRADER PRESENTS • THE FINAL CHAPTER</span>
+                        </div>
+
+                        <h1 class="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08]" data-i18n="hero_title">
+                            ONE STRATEGY.<br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-white to-cyber-emerald">
+                                ZERO NOISE.
+                            </span><br>
+                            MILLIONAIRE SCALE.
+                        </h1>
+
+                        <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed" data-i18n="hero_desc">
+                            Stop jumping from indicator to indicator. <strong class="text-white">NGL TRADER</strong> reveals the exact institutional liquidity-sweep & precision execution model engineered to complete your trading journey forever—available today for just <span class="text-cyber-emerald font-mono font-bold">$10</span>.
+                        </p>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                            <button onclick="openCheckoutModal()" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-cyber-cyan to-cyber-emerald text-cyber-black font-display font-bold text-lg tracking-wide shadow-xl shadow-cyber-cyan/20 hover:shadow-cyber-emerald/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 cursor-pointer">
+                                <span data-i18n="hero_btn_buy">GET INSTANT ACCESS — $10</span>
+                                <i class="fa-solid fa-lock-open"></i>
+                            </button>
+                            <button onclick="navigatePage('profits')" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-mono text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-trophy text-cyber-emerald"></i>
+                                <span data-i18n="hero_btn_profits">VIEW STUDENT PROFITS</span>
+                            </button>
+                        </div>
+
+                        <!-- Trust & Sharp Metrics -->
+                        <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 max-w-lg mx-auto lg:mx-0">
+                            <div>
+                                <div class="font-mono text-2xl sm:text-3xl font-extrabold text-white">1:4.5+</div>
+                                <div class="text-xs text-slate-400 uppercase tracking-wider mt-1" data-i18n="stat_rr">Avg Risk/Reward</div>
+                            </div>
+                            <div>
+                                <div class="font-mono text-2xl sm:text-3xl font-extrabold text-cyber-cyan">1 SETUP</div>
+                                <div class="text-xs text-slate-400 uppercase tracking-wider mt-1" data-i18n="stat_setup">Repeatable Daily</div>
+                            </div>
+                            <div>
+                                <div class="font-mono text-2xl sm:text-3xl font-extrabold text-cyber-emerald">$10</div>
+                                <div class="text-xs text-slate-400 uppercase tracking-wider mt-1" data-i18n="stat_price">Lifetime Access</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero Right: Animated Live Algorithmic Execution Terminal -->
+                    <div class="lg:col-span-5">
+                        <div class="relative rounded-2xl bg-cyber-card/90 border border-cyber-cyan/30 p-5 sm:p-6 shadow-2xl shadow-cyber-cyan/10 backdrop-blur-xl animate-float">
+                            <!-- Terminal Header -->
+                            <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                                    <span class="w-3 h-3 rounded-full bg-cyber-emerald"></span>
+                                    <span class="ml-2 font-mono text-xs text-slate-400">NGL_APEX_MODEL.exe</span>
+                                </div>
+                                <span class="px-2.5 py-0.5 rounded bg-cyber-emerald/15 text-cyber-emerald font-mono text-[11px] font-bold">
+                                    SNIPER ENTRY ACTIVE
+                                </span>
+                            </div>
+
+                            <!-- Live Simulated Candlestick & Liquidity Sweep Canvas -->
+                            <div class="my-5 relative rounded-xl bg-cyber-black/80 border border-white/5 p-3 overflow-hidden">
+                                <div class="flex justify-between items-center text-[11px] font-mono text-slate-400 mb-2">
+                                    <span>XAUUSD • M15 LIQUIDITY SWEEP</span>
+                                    <span id="live-price-tag" class="text-cyber-cyan font-bold">$2,748.90</span>
+                                </div>
+                                <canvas id="strategy-chart" class="w-full h-48 block"></canvas>
+                                <!-- Overlay Callout -->
+                                <div class="mt-2 flex items-center justify-between text-[11px] font-mono bg-cyber-dark/90 px-3 py-2 rounded-lg border border-cyber-cyan/20">
+                                    <span class="text-slate-400">STATUS:</span>
+                                    <span id="trade-status-text" class="text-cyber-emerald font-bold">TARGET HIT (+4.8R) // +$4,800</span>
+                                </div>
+                            </div>
+
+                            <!-- Execution Steps Mini-Log -->
+                            <div class="space-y-2.5 font-mono text-xs">
+                                <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                                    <span class="text-slate-400" data-i18n="term_step1">01. Session Liquidity Pool</span>
+                                    <span class="text-cyber-cyan font-semibold">SWEPT <i class="fa-solid fa-check ml-1"></i></span>
+                                </div>
+                                <div class="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                                    <span class="text-slate-400" data-i18n="term_step2">02. Displacement Shift</span>
+                                    <span class="text-cyber-cyan font-semibold">CONFIRMED <i class="fa-solid fa-check ml-1"></i></span>
+                                </div>
+                                <div class="flex items-center justify-between p-2.5 rounded-lg bg-cyber-emerald/10 border border-cyber-emerald/30">
+                                    <span class="text-white font-semibold" data-i18n="term_step3">03. Asymmetric Execution</span>
+                                    <span class="text-cyber-emerald font-bold">+480 PIPS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Page Navigation Cards on Home -->
+            <section class="pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div onclick="navigatePage('strategy')" class="group cursor-pointer rounded-2xl bg-cyber-card border border-white/10 hover:border-cyber-cyan/60 p-6 transition-all hover:-translate-y-1">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="font-mono text-xs text-cyber-cyan">PAGE 02 // DEEP DIVE</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-slate-400 group-hover:text-cyber-cyan"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2" data-i18n="card_strat_title">The Single-Strategy Blueprint</h3>
+                        <p class="text-slate-400 text-sm" data-i18n="card_strat_desc">Explore the 4 core modules, institutional session timings, and exact entry rules.</p>
+                    </div>
+
+                    <div onclick="navigatePage('profits')" class="group cursor-pointer rounded-2xl bg-cyber-card border border-white/10 hover:border-cyber-emerald/60 p-6 transition-all hover:-translate-y-1">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="font-mono text-xs text-cyber-emerald">PAGE 03 // LIVE RESULTS</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-slate-400 group-hover:text-cyber-emerald"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2" data-i18n="card_prof_title">Student Profits & Payouts</h3>
+                        <p class="text-slate-400 text-sm" data-i18n="card_prof_desc">Inspect verified prop-firm payouts, daily PnL cards, and student performance stats.</p>
+                    </div>
+
+                    <div onclick="navigatePage('simulator')" class="group cursor-pointer rounded-2xl bg-cyber-card border border-white/10 hover:border-purple-500/60 p-6 transition-all hover:-translate-y-1">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="font-mono text-xs text-purple-400">PAGE 04 // CALCULATOR</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-slate-400 group-hover:text-purple-400"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2" data-i18n="card_math_title">Millionaire Compounding Lab</h3>
+                        <p class="text-slate-400 text-sm" data-i18n="card_math_desc">Model how a small account scales to $1,000,000+ using 1:4 R:R risk management.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PAGE 2: STRATEGY INTEL & CURRICULUM ==================== -->
+        <div id="page-strategy" class="page-view hidden">
+            <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                    <span class="font-mono text-xs uppercase tracking-[0.25em] text-cyber-cyan" data-i18n="strat_badge">THE COMPLETE ARCHITECTURE</span>
+                    <h2 class="font-display text-3xl sm:text-5xl font-bold text-white" data-i18n="strat_heading">
+                        Why 95% Fail & How <span class="text-cyber-emerald">One Strategy</span> Fixes Everything
+                    </h2>
+                    <p class="text-slate-400 text-sm sm:text-base" data-i18n="strat_sub">
+                        You don't need 15 lagging indicators, $2,000 Discord groups, or 10 hours of screen time. Mastery comes from executing one high-probability asymmetric setup with robotic precision.
+                    </p>
+                </div>
+
+                <!-- 3 Pillars -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 p-7">
+                        <div class="w-12 h-12 rounded-xl bg-cyber-cyan/10 border border-cyber-cyan/30 flex items-center justify-center text-cyber-cyan text-xl mb-5">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2" data-i18n="pillar1_title">Laser-Sharp Simplicity</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="pillar1_desc">A strict 3-step checklist. If the market doesn't print our exact footprint, we don't click buy or sell. Zero guesswork, zero emotional FOMO.</p>
+                    </div>
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 p-7">
+                        <div class="w-12 h-12 rounded-xl bg-cyber-emerald/10 border border-cyber-emerald/30 flex items-center justify-center text-cyber-emerald text-xl mb-5">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2" data-i18n="pillar2_title">90-Minute Killzone Window</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="pillar2_desc">Trade only during peak London & New York institutional volume bursts. Close your charts after 90 minutes and enjoy your life.</p>
+                    </div>
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 p-7">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xl mb-5">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-white mb-2" data-i18n="pillar3_title">Why Only $10?</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="pillar3_desc">NGL TRADER makes institutional-grade education accessible to anyone hungry enough to take action—filtering out freebie seekers while changing lives.</p>
+                    </div>
+                </div>
+
+                <!-- 4 Modules Vault -->
+                <div class="max-w-4xl mx-auto space-y-4">
+                    <h3 class="font-display text-2xl font-bold text-white text-center mb-8" data-i18n="vault_title">Inside The $10 NGL Masterclass Vault</h3>
+                    
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan font-mono font-bold flex items-center justify-center shrink-0">01</div>
+                            <div>
+                                <h4 class="font-display text-lg font-bold text-white" data-i18n="mod1_t">Institutional Liquidity Mapping</h4>
+                                <p class="text-slate-400 text-sm mt-1" data-i18n="mod1_d">Learn to spot the exact price magnets where retail stop-losses cluster before every major move.</p>
+                            </div>
+                        </div>
+                        <span class="font-mono text-xs text-cyber-cyan bg-cyber-cyan/10 px-3 py-1 rounded-full shrink-0">MODULE 01</span>
+                    </div>
+
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan font-mono font-bold flex items-center justify-center shrink-0">02</div>
+                            <div>
+                                <h4 class="font-display text-lg font-bold text-white" data-i18n="mod2_t">The NGL Trigger & Sniper Entry</h4>
+                                <p class="text-slate-400 text-sm mt-1" data-i18n="mod2_d">Our proprietary 3-candle confirmation sequence that eliminates false breakouts and tightens your stop-loss.</p>
+                            </div>
+                        </div>
+                        <span class="font-mono text-xs text-cyber-emerald bg-cyber-emerald/10 px-3 py-1 rounded-full shrink-0">CORE SECRET</span>
+                    </div>
+
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan font-mono font-bold flex items-center justify-center shrink-0">03</div>
+                            <div>
+                                <h4 class="font-display text-lg font-bold text-white" data-i18n="mod3_t">Prop-Firm & Millionaire Scaling Blueprint</h4>
+                                <p class="text-slate-400 text-sm mt-1" data-i18n="mod3_d">Exact position-sizing math to pass $100K–$400K funded challenges and compound personal capital safely.</p>
+                            </div>
+                        </div>
+                        <span class="font-mono text-xs text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full shrink-0">SCALING</span>
+                    </div>
+
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan font-mono font-bold flex items-center justify-center shrink-0">04</div>
+                            <div>
+                                <h4 class="font-display text-lg font-bold text-white" data-i18n="mod4_t">Live Trade Breakdowns + Printable PDF Checklist</h4>
+                                <p class="text-slate-400 text-sm mt-1" data-i18n="mod4_d">Watch real executions across Gold, Nasdaq, and Crypto alongside a 1-page desk execution sheet.</p>
+                            </div>
+                        </div>
+                        <span class="font-mono text-xs text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full shrink-0">BONUS</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PAGE 3: STUDENT PROFITS & PERFORMANCE SHOWCASE ==================== -->
+        <div id="page-profits" class="page-view hidden">
+            <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center max-w-3xl mx-auto mb-12 space-y-4">
+                    <span class="font-mono text-xs uppercase tracking-[0.25em] text-cyber-emerald" data-i18n="prof_badge">VERIFIED COMMUNITY PERFORMANCE</span>
+                    <h2 class="font-display text-3xl sm:text-5xl font-bold text-white" data-i18n="prof_heading">
+                        NGL Students <span class="text-cyber-cyan">Profit Terminal</span> & Payouts
+                    </h2>
+                    <p class="text-slate-400 text-sm sm:text-base" data-i18n="prof_sub">
+                        Verified results from traders who stopped strategy-hopping and committed to the $10 NGL Single Strategy. View full live proofs on our official Telegram.
+                    </p>
+                    <div class="pt-2">
+                        <a href="https://t.me/ngltrader" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#229ED9]/15 hover:bg-[#229ED9]/25 border border-[#229ED9]/40 text-[#38bdf8] font-mono text-xs font-bold transition-all">
+                            <i class="fa-brands fa-telegram text-base"></i>
+                            <span data-i18n="prof_tg_btn">VIEW LIVE PROOFS ON TELEGRAM (@NGLTRADER)</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Aggregate Community Performance Banner -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                    <div class="p-5 rounded-2xl bg-cyber-card border border-cyber-emerald/30 text-center">
+                        <div class="font-mono text-2xl sm:text-3xl font-extrabold text-cyber-emerald">$4.82M+</div>
+                        <div class="font-mono text-[11px] text-slate-400 uppercase mt-1" data-i18n="prof_stat1">Reported Student Profits</div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-cyber-card border border-cyber-cyan/30 text-center">
+                        <div class="font-mono text-2xl sm:text-3xl font-extrabold text-cyber-cyan">78.4%</div>
+                        <div class="font-mono text-[11px] text-slate-400 uppercase mt-1" data-i18n="prof_stat2">Avg Model Win Rate</div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-cyber-card border border-white/10 text-center">
+                        <div class="font-mono text-2xl sm:text-3xl font-extrabold text-white">1 : 4.7</div>
+                        <div class="font-mono text-[11px] text-slate-400 uppercase mt-1" data-i18n="prof_stat3">Realized R:R Ratio</div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-cyber-card border border-white/10 text-center">
+                        <div class="font-mono text-2xl sm:text-3xl font-extrabold text-amber-400">3,420+</div>
+                        <div class="font-mono text-[11px] text-slate-400 uppercase mt-1" data-i18n="prof_stat4">Active NGL Traders</div>
+                    </div>
+                </div>
+
+                <!-- Student Profit Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Student 1 -->
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 hover:border-cyber-emerald/50 p-6 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyber-cyan to-cyber-emerald text-cyber-black font-bold flex items-center justify-center font-mono">AR</div>
+                                    <div>
+                                        <div class="font-display font-bold text-white text-sm">AR*** • Member #0412</div>
+                                        <div class="font-mono text-[11px] text-slate-400">XAUUSD (Gold) • $500 → $14,200</div>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded bg-cyber-emerald/15 text-cyber-emerald font-mono text-xs font-bold">+2,740%</span>
+                            </div>
+                            <!-- Mini Trade PnL Ticket -->
+                            <div class="p-3.5 rounded-xl bg-cyber-black/90 border border-white/5 font-mono text-xs space-y-1.5 mb-4">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">PAIR / SETUP:</span>
+                                    <span class="text-white">XAUUSD LONG (NGL SWEEP)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">RISK / REWARD:</span>
+                                    <span class="text-cyber-cyan">1 : 5.2 R</span>
+                                </div>
+                                <div class="flex justify-between border-t border-white/10 pt-1.5">
+                                    <span class="text-slate-400">NET PROFIT:</span>
+                                    <span class="text-cyber-emerald font-bold">+$6,480.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-slate-300 text-xs italic leading-relaxed" data-i18n="rev1">
+                            "I blew 4 accounts before NGL TRADER. Paid $10 last month, followed only the liquidity sweep rule on Gold, and made my first $6.4K week."
+                        </p>
+                    </div>
+
+                    <!-- Student 2 -->
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 hover:border-cyber-cyan/50 p-6 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-cyber-cyan text-white font-bold flex items-center justify-center font-mono">MK</div>
+                                    <div>
+                                        <div class="font-display font-bold text-white text-sm">MK*** • Member #0894</div>
+                                        <div class="font-mono text-[11px] text-slate-400">NAS100 • $200K Funded Payout</div>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded bg-cyber-cyan/15 text-cyber-cyan font-mono text-xs font-bold">+$18,950</span>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-cyber-black/90 border border-white/5 font-mono text-xs space-y-1.5 mb-4">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">PAIR / SETUP:</span>
+                                    <span class="text-white">NAS100 SHORT (NY OPEN)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">RISK / REWARD:</span>
+                                    <span class="text-cyber-cyan">1 : 4.5 R</span>
+                                </div>
+                                <div class="flex justify-between border-t border-white/10 pt-1.5">
+                                    <span class="text-slate-400">PROP PAYOUT:</span>
+                                    <span class="text-cyber-emerald font-bold">+$18,950.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-slate-300 text-xs italic leading-relaxed" data-i18n="rev2">
+                            "Passed both phases of my $200K prop challenge in 11 trading days using just one setup per day. Best $10 investment of my life."
+                        </p>
+                    </div>
+
+                    <!-- Student 3 -->
+                    <div class="rounded-2xl bg-cyber-card border border-white/10 hover:border-cyber-emerald/50 p-6 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyber-emerald to-teal-400 text-cyber-black font-bold flex items-center justify-center font-mono">RV</div>
+                                    <div>
+                                        <div class="font-display font-bold text-white text-sm">RV*** • Member #1109</div>
+                                        <div class="font-mono text-[11px] text-slate-400">BTCUSD • $1,200 → $29,400</div>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded bg-cyber-emerald/15 text-cyber-emerald font-mono text-xs font-bold">+2,350%</span>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-cyber-black/90 border border-white/5 font-mono text-xs space-y-1.5 mb-4">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">PAIR / SETUP:</span>
+                                    <span class="text-white">BTCUSDT LONG (M15)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">RISK / REWARD:</span>
+                                    <span class="text-cyber-cyan">1 : 6.0 R</span>
+                                </div>
+                                <div class="flex justify-between border-t border-white/10 pt-1.5">
+                                    <span class="text-slate-400">NET PROFIT:</span>
+                                    <span class="text-cyber-emerald font-bold">+$11,320.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-slate-300 text-xs italic leading-relaxed" data-i18n="rev3">
+                            "No confusing indicators. Just pure liquidity & entry confirmation. My trading journey is finally complete."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CTA Strip under Student Profits -->
+                <div class="mt-12 p-8 rounded-2xl bg-gradient-to-r from-cyber-card via-cyber-dark to-cyber-card border border-cyber-cyan/30 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 class="font-display text-2xl font-bold text-white" data-i18n="prof_cta_t">Want to See Full Payout Videos & Live Proofs?</h3>
+                        <p class="text-slate-400 text-sm mt-1" data-i18n="prof_cta_d">Message NGL TRADER directly on Telegram or unlock the $10 strategy right now.</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+                        <a href="https://t.me/ngltrader" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-4 rounded-xl bg-[#229ED9]/20 hover:bg-[#229ED9]/30 border border-[#229ED9]/50 text-[#38bdf8] font-mono font-bold text-sm flex items-center justify-center gap-2 transition-all">
+                            <i class="fa-brands fa-telegram text-lg"></i>
+                            <span data-i18n="tg_direct_btn">TELEGRAM PROOF</span>
+                        </a>
+                        <button onclick="openCheckoutModal()" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-cyber-cyan to-cyber-emerald text-cyber-black font-display font-bold text-base cursor-pointer hover:scale-105 transition-transform">
+                            <span data-i18n="hero_btn_buy">GET INSTANT ACCESS — $10</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PAGE 4: MILLIONAIRE MATH SIMULATOR ==================== -->
+        <div id="page-simulator" class="page-view hidden">
+            <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center max-w-3xl mx-auto mb-12 space-y-4">
+                    <span class="font-mono text-xs uppercase tracking-[0.25em] text-cyber-cyan" data-i18n="sim_badge">INTERACTIVE WEALTH ENGINE</span>
+                    <h2 class="font-display text-3xl sm:text-5xl font-bold text-white" data-i18n="sim_title">
+                        Simulate Your Path to <span class="text-cyber-cyan">$1,000,000+</span>
+                    </h2>
+                    <p class="text-slate-400 text-sm sm:text-base" data-i18n="sim_desc">
+                        Adjust your starting capital, risk per trade, and monthly winning trades using the NGL Single Strategy (1:4 R:R average) to see how discipline compounds.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    <!-- Controls -->
+                    <div class="lg:col-span-5 rounded-2xl bg-cyber-card border border-white/10 p-6 sm:p-8 flex flex-col justify-between space-y-6">
+                        <div class="space-y-5">
+                            <div>
+                                <div class="flex justify-between font-mono text-xs mb-2">
+                                    <span class="text-slate-400" data-i18n="sim_start_lbl">Starting Account</span>
+                                    <span id="val-start" class="text-cyber-cyan font-bold">$1,000</span>
+                                </div>
+                                <input id="input-start" type="range" min="100" max="25000" step="100" value="1000" class="w-full accent-cyber-cyan cursor-pointer">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between font-mono text-xs mb-2">
+                                    <span class="text-slate-400" data-i18n="sim_risk_lbl">Risk Per Trade (%)</span>
+                                    <span id="val-risk" class="text-cyber-emerald font-bold">2.0%</span>
+                                </div>
+                                <input id="input-risk" type="range" min="0.5" max="5" step="0.5" value="2" class="w-full accent-cyber-emerald cursor-pointer">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between font-mono text-xs mb-2">
+                                    <span class="text-slate-400" data-i18n="sim_wins_lbl">Net +4R Wins / Month</span>
+                                    <span id="val-wins" class="text-cyber-cyan font-bold">6 Wins</span>
+                                </div>
+                                <input id="input-wins" type="range" min="2" max="15" step="1" value="6" class="w-full accent-cyber-cyan cursor-pointer">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between font-mono text-xs mb-2">
+                                    <span class="text-slate-400" data-i18n="sim_months_lbl">Compounding Timeline</span>
+                                    <span id="val-months" class="text-purple-400 font-bold">14 Months</span>
+                                </div>
+                                <input id="input-months" type="range" min="3" max="24" step="1" value="14" class="w-full accent-purple-400 cursor-pointer">
+                            </div>
+                        </div>
+
+                        <button onclick="openCheckoutModal()" class="w-full py-4 rounded-xl bg-gradient-to-r from-cyber-cyan to-cyber-emerald text-cyber-black font-display font-bold text-base tracking-wide shadow-lg hover:brightness-110 transition-all cursor-pointer">
+                            <span data-i18n="hero_btn_buy">GET INSTANT ACCESS — $10</span>
+                        </button>
+                    </div>
+
+                    <!-- Output & Equity Curve -->
+                    <div class="lg:col-span-7 rounded-2xl bg-cyber-card border border-cyber-cyan/30 p-6 sm:p-8 flex flex-col justify-between">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                            <div class="p-4 rounded-xl bg-cyber-black border border-white/10">
+                                <div class="font-mono text-[11px] text-slate-400 uppercase" data-i18n="sim_proj_eq">Projected Equity</div>
+                                <div id="projected-balance" class="font-mono text-2xl sm:text-3xl font-extrabold text-cyber-emerald mt-1">$1,182,490</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-cyber-black border border-white/10">
+                                <div class="font-mono text-[11px] text-slate-400 uppercase">TOTAL ROI</div>
+                                <div id="projected-roi" class="font-mono text-2xl sm:text-3xl font-extrabold text-cyber-cyan mt-1">+118,149%</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-cyber-black border border-white/10">
+                                <div class="font-mono text-[11px] text-slate-400 uppercase" data-i18n="sim_peak_mo">Monthly Gain at Peak</div>
+                                <div id="monthly-peak" class="font-mono text-2xl sm:text-3xl font-extrabold text-white mt-1">$428,120</div>
+                            </div>
+                        </div>
+
+                        <div class="relative rounded-xl bg-cyber-black/90 border border-white/5 p-4 flex-1 min-h-[240px]">
+                            <div class="flex items-center justify-between font-mono text-[11px] text-slate-400 mb-2">
+                                <span>EXPONENTIAL EQUITY CURVE (1:4 R:R COMPOUNDING)</span>
+                                <span class="text-cyber-emerald">NGL PROTOCOL</span>
+                            </div>
+                            <canvas id="equity-curve-canvas" class="w-full h-56 block"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PAGE 5: FAQ & RISK PROTOCOL ==================== -->
+        <div id="page-faq" class="page-view hidden">
+            <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+                <div class="text-center mb-12 space-y-3">
+                    <span class="font-mono text-xs uppercase tracking-[0.25em] text-cyber-cyan">MISSION BRIEFING</span>
+                    <h2 class="font-display text-3xl sm:text-5xl font-bold text-white" data-i18n="faq_title">Frequently Asked Questions & Rules</h2>
+                </div>
+
+                <div class="space-y-4 mb-16">
+                    <details open class="group rounded-xl bg-cyber-card border border-white/10 p-6 cursor-pointer">
+                        <summary class="font-display font-semibold text-white text-lg flex items-center justify-between list-none">
+                            <span data-i18n="faq1_q">Does this single strategy work for beginners?</span>
+                            <i class="fa-solid fa-chevron-down text-cyber-cyan group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-slate-400 text-sm mt-3 leading-relaxed" data-i18n="faq1_a">
+                            Yes. Because you only focus on one clear, repeatable market pattern rather than dozens of conflicting indicators, beginners learn faster and avoid bad habits from day one.
+                        </p>
+                    </details>
+
+                    <details class="group rounded-xl bg-cyber-card border border-white/10 p-6 cursor-pointer">
+                        <summary class="font-display font-semibold text-white text-lg flex items-center justify-between list-none">
+                            <span data-i18n="faq2_q">Which markets and timeframes does it work on?</span>
+                            <i class="fa-solid fa-chevron-down text-cyber-cyan group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-slate-400 text-sm mt-3 leading-relaxed" data-i18n="faq2_a">
+                            Price action and liquidity are universal. The NGL Single Strategy works seamlessly on Gold (XAUUSD), Nasdaq (NAS100), Major Forex Pairs, and Bitcoin/Crypto across M5, M15, and H1 timeframes.
+                        </p>
+                    </details>
+
+                    <details class="group rounded-xl bg-cyber-card border border-white/10 p-6 cursor-pointer">
+                        <summary class="font-display font-semibold text-white text-lg flex items-center justify-between list-none">
+                            <span data-i18n="faq3_q">How do I pay the $10 and get immediate access?</span>
+                            <i class="fa-solid fa-chevron-down text-cyber-cyan group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-slate-400 text-sm mt-3 leading-relaxed" data-i18n="faq3_a">
+                            Click any "Unlock $10" button, send $10 USDT/USDC (BEP20 / ERC20 / Polygon) to our official NGL TRADER wallet address shown in checkout, enter your email & transaction ID, and receive instant vault access.
+                        </p>
+                    </details>
+                </div>
+
+                <!-- Final Conversion Box -->
+                <div class="relative rounded-3xl bg-cyber-card border-2 border-cyber-cyan/50 p-8 sm:p-12 text-center overflow-hidden animate-glow">
+                    <h3 class="font-display text-3xl sm:text-4xl font-bold text-white mb-4" data-i18n="final_cta_t">
+                        Complete Your Trading Journey Today.
+                    </h3>
+                    <p class="text-slate-300 max-w-xl mx-auto text-sm sm:text-base mb-8" data-i18n="final_cta_d">
+                        Pay $10 once. Download the entire NGL TRADER Single-Strategy System and never buy another trading course again.
+                    </p>
+                    <button onclick="openCheckoutModal()" class="w-full sm:w-auto px-10 py-5 rounded-2xl bg-gradient-to-r from-cyber-cyan to-cyber-emerald text-cyber-black font-display font-bold text-lg tracking-wide shadow-2xl hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                        <i class="fa-solid fa-bolt mr-2"></i> <span data-i18n="hero_btn_buy">GET INSTANT ACCESS — $10</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 border-t border-white/10 bg-cyber-dark py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-chart-line text-cyber-cyan text-xl"></i>
+                <span class="font-display font-bold text-lg tracking-wider text-white">NGL TRADER PRESENTS</span>
+            </div>
+            <p class="text-xs text-slate-500 text-center md:text-right max-w-xl" data-i18n="footer_disclaimer">
+                Risk Disclaimer: Trading financial instruments carries a high level of risk. Past performance and mathematical compounding simulations do not guarantee future results. Trade responsibly.
+            </p>
+        </div>
+    </footer>
+
+    <!-- FUTURISTIC $10 CRYPTO CHECKOUT MODAL WITH WALLET ADDRESS -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+        <div class="relative w-full max-w-lg rounded-2xl bg-cyber-card border border-cyber-cyan/50 p-6 sm:p-8 shadow-2xl shadow-cyber-cyan/20 my-8">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-2 text-cyber-cyan font-mono text-xs uppercase tracking-widest mb-2">
+                <i class="fa-solid fa-bolt"></i> <span data-i18n="modal_badge">NGL TRADER DIRECT $10 PAYMENT</span>
+            </div>
+            <h3 class="font-display text-2xl font-bold text-white mb-1" data-i18n="modal_title">Unlock The Single Strategy</h3>
+            <p class="text-slate-400 text-xs mb-5" data-i18n="modal_sub">Send exactly $10 (USDT / USDC / ETH) to the official NGL TRADER address below, then send your payment proof directly on Telegram.</p>
+
+            <!-- Official Wallet Address Box -->
+            <div class="p-4 rounded-xl bg-cyber-black border border-cyber-cyan/40 mb-5">
+                <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1.5">
+                    <span>OFFICIAL RECEIVING ADDRESS (EVM / USDT / USDC)</span>
+                    <span class="text-cyber-emerald font-bold">$10.00 USD</span>
+                </div>
+                <div class="flex items-center justify-between gap-2 bg-cyber-dark p-2.5 rounded-lg border border-white/10">
+                    <code id="wallet-address-text" class="font-mono text-xs text-cyber-cyan break-all select-all">0xf9223842a43d4df83779b950534684bee2172e31</code>
+                    <button type="button" onclick="copyWalletAddress()" class="shrink-0 px-3 py-1.5 rounded-lg bg-cyber-cyan/15 hover:bg-cyber-cyan/25 text-cyber-cyan font-mono text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer">
+                        <i class="fa-regular fa-copy"></i>
+                        <span data-i18n="copy_btn">COPY</span>
+                    </button>
+                </div>
+            </div>
+
+            <form id="checkout-form" onsubmit="handleCheckoutSubmit(event)" class="space-y-3.5">
+                <div>
+                    <label class="block font-mono text-xs text-slate-300 mb-1" data-i18n="form_name">YOUR FULL NAME</label>
+                    <input type="text" required placeholder="Alex Mercer" class="w-full px-4 py-2.5 rounded-xl bg-cyber-black border border-white/15 focus:border-cyber-cyan focus:outline-none text-white text-sm">
+                </div>
+                <div>
+                    <label class="block font-mono text-xs text-slate-300 mb-1" data-i18n="form_email">DELIVERY EMAIL</label>
+                    <input type="email" required placeholder="trader@domain.com" class="w-full px-4 py-2.5 rounded-xl bg-cyber-black border border-white/15 focus:border-cyber-cyan focus:outline-none text-white text-sm">
+                </div>
+                <div>
+                    <label class="block font-mono text-xs text-slate-300 mb-1" data-i18n="form_tx">TRANSACTION HASH / TXID</label>
+                    <input type="text" required placeholder="0x..." class="w-full px-4 py-2.5 rounded-xl bg-cyber-black border border-white/15 focus:border-cyber-cyan focus:outline-none text-white font-mono text-xs">
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyber-cyan to-cyber-emerald text-cyber-black font-display font-bold text-base tracking-wide shadow-lg hover:brightness-110 transition-all cursor-pointer mt-2">
+                    <span data-i18n="form_submit">VERIFY $10 PAYMENT & UNLOCK</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+
+                <a href="https://t.me/ngltrader" target="_blank" rel="noopener noreferrer" class="w-full py-3 rounded-xl bg-[#229ED9]/15 hover:bg-[#229ED9]/25 border border-[#229ED9]/40 text-[#38bdf8] font-mono text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-brands fa-telegram text-base"></i>
+                    <span data-i18n="modal_tg_send">SEND SCREENSHOT DIRECTLY ON TELEGRAM</span>
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        // 0. Bilingual Dictionary (English & Hindi)
+        let currentLang = 'en';
+        const translations = {
+            en: {
+                ticker_status: "SYSTEM ONLINE // PROTOCOL V4.2",
+                ticker_tagline: "ONE STRATEGY TO END THE SEARCH",
+                brand_sub: "Presents",
+                nav_home: "01. HOME",
+                nav_strategy: "02. STRATEGY INTEL",
+                nav_profits: "03. STUDENT PROFITS",
+                nav_math: "04. MILLIONAIRE MATH",
+                nav_faq: "05. FAQ & RULES",
+                nav_cta: "UNLOCK $10",
+                hero_badge: "NGL TRADER PRESENTS • THE FINAL CHAPTER",
+                hero_title: 'ONE STRATEGY.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-white to-cyber-emerald">ZERO NOISE.</span><br>MILLIONAIRE SCALE.',
+                hero_desc: 'Stop jumping from indicator to indicator. <strong class="text-white">NGL TRADER</strong> reveals the exact institutional liquidity-sweep & precision execution model engineered to complete your trading journey forever—available today for just <span class="text-cyber-emerald font-mono font-bold">$10</span>.',
+                hero_btn_buy: "GET INSTANT ACCESS — $10",
+                hero_btn_profits: "VIEW STUDENT PROFITS",
+                stat_rr: "Avg Risk/Reward",
+                stat_setup: "Repeatable Daily",
+                stat_price: "Lifetime Access",
+                term_step1: "01. Session Liquidity Pool",
+                term_step2: "02. Displacement Shift",
+                term_step3: "03. Asymmetric Execution",
+                card_strat_title: "The Single-Strategy Blueprint",
+                card_strat_desc: "Explore the 4 core modules, institutional session timings, and exact entry rules.",
+                card_prof_title: "Student Profits & Payouts",
+                card_prof_desc: "Inspect verified prop-firm payouts, daily PnL cards, and student performance stats.",
+                card_math_title: "Millionaire Compounding Lab",
+                card_math_desc: "Model how a small account scales to $1,000,000+ using 1:4 R:R risk management.",
+                strat_badge: "THE COMPLETE ARCHITECTURE",
+                strat_heading: 'Why 95% Fail & How <span class="text-cyber-emerald">One Strategy</span> Fixes Everything',
+                strat_sub: "You don't need 15 lagging indicators, $2,000 Discord groups, or 10 hours of screen time. Mastery comes from executing one high-probability asymmetric setup with robotic precision.",
+                pillar1_title: "Laser-Sharp Simplicity",
+                pillar1_desc: "A strict 3-step checklist. If the market doesn't print our exact footprint, we don't click buy or sell. Zero guesswork, zero emotional FOMO.",
+                pillar2_title: "90-Minute Killzone Window",
+                pillar2_desc: "Trade only during peak London & New York institutional volume bursts. Close your charts after 90 minutes and enjoy your life.",
+                pillar3_title: "Why Only $10?",
+                pillar3_desc: "NGL TRADER makes institutional-grade education accessible to anyone hungry enough to take action—filtering out freebie seekers while changing lives.",
+                vault_title: "Inside The $10 NGL Masterclass Vault",
+                mod1_t: "Institutional Liquidity Mapping",
+                mod1_d: "Learn to spot the exact price magnets where retail stop-losses cluster before every major move.",
+                mod2_t: "The NGL Trigger & Sniper Entry",
+                mod2_d: "Our proprietary 3-candle confirmation sequence that eliminates false breakouts and tightens your stop-loss.",
+                mod3_t: "Prop-Firm & Millionaire Scaling Blueprint",
+                mod3_d: "Exact position-sizing math to pass $100K–$400K funded challenges and compound personal capital safely.",
+                mod4_t: "Live Trade Breakdowns + Printable PDF Checklist",
+                mod4_d: "Watch real executions across Gold, Nasdaq, and Crypto alongside a 1-page desk execution sheet.",
+                prof_badge: "VERIFIED COMMUNITY PERFORMANCE",
+                prof_heading: 'NGL Students <span class="text-cyber-cyan">Profit Terminal</span> & Payouts',
+                prof_sub: "Verified results from traders who stopped strategy-hopping and committed to the $10 NGL Single Strategy. View full live proofs on our official Telegram.",
+                prof_tg_btn: "VIEW LIVE PROOFS ON TELEGRAM (@NGLTRADER)",
+                prof_stat1: "Reported Student Profits",
+                prof_stat2: "Avg Model Win Rate",
+                prof_stat3: "Realized R:R Ratio",
+                prof_stat4: "Active NGL Traders",
+                rev1: '"I blew 4 accounts before NGL TRADER. Paid $10 last month, followed only the liquidity sweep rule on Gold, and made my first $6.4K week."',
+                rev2: '"Passed both phases of my $200K prop challenge in 11 trading days using just one setup per day. Best $10 investment of my life."',
+                rev3: '"No confusing indicators. Just pure liquidity & entry confirmation. My trading journey is finally complete."',
+                prof_cta_t: "Want to See Full Payout Videos & Live Proofs?",
+                prof_cta_d: "Message NGL TRADER directly on Telegram or unlock the $10 strategy right now.",
+                tg_direct_btn: "TELEGRAM PROOF",
+                sim_badge: "INTERACTIVE WEALTH ENGINE",
+                sim_title: 'Simulate Your Path to <span class="text-cyber-cyan">$1,000,000+</span>',
+                sim_desc: "Adjust your starting capital, risk per trade, and monthly winning trades using the NGL Single Strategy (1:4 R:R average) to see how discipline compounds.",
+                sim_start_lbl: "Starting Account",
+                sim_risk_lbl: "Risk Per Trade (%)",
+                sim_wins_lbl: "Net +4R Wins / Month",
+                sim_months_lbl: "Compounding Timeline",
+                sim_proj_eq: "Projected Equity",
+                sim_peak_mo: "Monthly Gain at Peak",
+                faq_title: "Frequently Asked Questions & Rules",
+                faq1_q: "Does this single strategy work for beginners?",
+                faq1_a: "Yes. Because you only focus on one clear, repeatable market pattern rather than dozens of conflicting indicators, beginners learn faster and avoid bad habits from day one.",
+                faq2_q: "Which markets and timeframes does it work on?",
+                faq2_a: "Price action and liquidity are universal. The NGL Single Strategy works seamlessly on Gold (XAUUSD), Nasdaq (NAS100), Major Forex Pairs, and Bitcoin/Crypto across M5, M15, and H1 timeframes.",
+                faq3_q: "How do I pay the $10 and get immediate access?",
+                faq3_a: 'Click any "Unlock $10" button, send $10 USDT/USDC (BEP20 / ERC20 / Polygon) to our official NGL TRADER wallet address shown in checkout, enter your email & transaction ID, and receive instant vault access.',
+                final_cta_t: "Complete Your Trading Journey Today.",
+                final_cta_d: "Pay $10 once. Download the entire NGL TRADER Single-Strategy System and never buy another trading course again.",
+                footer_disclaimer: "Risk Disclaimer: Trading financial instruments carries a high level of risk. Past performance and mathematical compounding simulations do not guarantee future results. Trade responsibly.",
+                modal_badge: "NGL TRADER DIRECT $10 PAYMENT",
+                modal_title: "Unlock The Single Strategy",
+                modal_sub: "Send exactly $10 (USDT / USDC / ETH) to the official NGL TRADER address below, then send your payment proof directly on Telegram.",
+                copy_btn: "COPY",
+                form_name: "YOUR FULL NAME",
+                form_email: "DELIVERY EMAIL",
+                form_tx: "TRANSACTION HASH / TXID",
+                form_submit: "VERIFY $10 PAYMENT & UNLOCK",
+                modal_tg_send: "SEND SCREENSHOT DIRECTLY ON TELEGRAM"
+            },
+            hi: {
+                ticker_status: "सिस्टम ऑनलाइन // प्रोटोकॉल V4.2",
+                ticker_tagline: "आपकी ट्रेडिंग खोज को पूरा करने वाली एकमात्र रणनीति",
+                brand_sub: "प्रस्तुत करते हैं",
+                nav_home: "01. होम",
+                nav_strategy: "02. रणनीति ज्ञान",
+                nav_profits: "03. छात्रों का मुनाफा",
+                nav_math: "04. करोड़पति गणित",
+                nav_faq: "05. नियम व सवाल",
+                nav_cta: "$10 में अनलॉक करें",
+                hero_badge: "NGL TRADER प्रस्तुत करता है • अंतिम अध्याय",
+                hero_title: 'एक ही रणनीति.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-white to-cyber-emerald">जीरो शोर.</span><br>करोड़पति स्केल.',
+                hero_desc: 'अलग-अलग इंडिकेटर्स के पीछे भागना बंद करें। <strong class="text-white">NGL TRADER</strong> लाया है सटीक इंस्टीट्यूशनल लिक्विडिटी-स्वीप मॉडल जो आपकी ट्रेडिंग यात्रा को हमेशा के लिए पूरा कर देगा—आज सिर्फ <span class="text-cyber-emerald font-mono font-bold">$10</span> में उपलब्ध।',
+                hero_btn_buy: "अभी एक्सेस पाएं — $10",
+                hero_btn_profits: "छात्रों का मुनाफा देखें",
+                stat_rr: "औसत रिस्क/रिवॉर्ड",
+                stat_setup: "रोज़ाना दोहराने योग्य",
+                stat_price: "लाइफटाइम एक्सेस",
+                term_step1: "01. सेशन लिक्विडिटी पूल",
+                term_step2: "02. डिस्प्लेसमेंट शिफ्ट",
+                term_step3: "03. सटीक एंट्री और मुनाफा",
+                card_strat_title: "सिंगल-स्ट्रेटेजी ब्लूप्रिंट",
+                card_strat_desc: "4 मुख्य मॉड्यूल, इंस्टीट्यूशनल सेशन टाइमिंग और सटीक एंट्री नियमों को जानें।",
+                card_prof_title: "छात्रों के मुनाफे और पेआउट",
+                card_prof_desc: "प्रॉप-फर्म पेआउट, डेली PnL कार्ड और छात्रों के प्रदर्शन के आंकड़े देखें।",
+                card_math_title: "करोड़पति कंपाउंडिंग लैब",
+                card_math_desc: "देखें कि 1:4 R:R रिस्क मैनेजमेंट से एक छोटा अकाउंट $1,000,000+ तक कैसे बढ़ता है।",
+                strat_badge: "संपूर्ण ट्रेडिंग आर्किटेक्चर",
+                strat_heading: '95% ट्रेडर्स क्यों हारते हैं और <span class="text-cyber-emerald">एक रणनीति</span> सब कुछ कैसे बदलती है',
+                strat_sub: "आपको 15 इंडिकेटर्स या महंगे ग्रुप्स की ज़रूरत नहीं है। असली सफलता एक ही हाई-प्रोबेबिलिटी सेटअप को अनुशासन के साथ ट्रेड करने से मिलती है।",
+                pillar1_title: "लेज़र-शार्प सरलता",
+                pillar1_desc: "एक सख्त 3-स्टेप चेकलिस्ट। जब तक मार्केट हमारा सटीक पैटर्न नहीं बनाता, हम ट्रेड नहीं लेते। कोई अंदाज़ा नहीं, कोई FOMO नहीं।",
+                pillar2_title: "90-मिनट किलज़ोन विंडो",
+                pillar2_desc: "केवल लंदन और न्यूयॉर्क सेशन के पीक वॉल्यूम में ट्रेड करें। 90 मिनट बाद चार्ट बंद करें और अपनी ज़िंदगी जिएं।",
+                pillar3_title: "सिर्फ $10 ही क्यों?",
+                pillar3_desc: "NGL TRADER का लक्ष्य है कि हर मेहनती ट्रेडर को कम कीमत में इंस्टीट्यूशनल शिक्षा मिले, ताकि वह अपनी ट्रेडिंग जर्नी पूरी कर सके।",
+                vault_title: "$10 NGL मास्टरक्लास वॉल्ट के अंदर क्या है",
+                mod1_t: "इंस्टीट्यूशनल लिक्विडिटी मैपिंग",
+                mod1_d: "सीखें कि बड़े मूव से पहले रिटेल स्टॉप-लॉस कहाँ जमा होते हैं और मार्केट उन्हें कैसे हंट करता है।",
+                mod2_t: "NGL ट्रिगर और स्नाइपर एंट्री",
+                mod2_d: "हमारा खास 3-कैंडल कन्फर्मेशन जो फेक ब्रेकआउट से बचाता है और स्टॉप-लॉस को बेहद छोटा रखता है।",
+                mod3_t: "प्रॉप-फर्म और करोड़पति स्केलिंग ब्लूप्रिंट",
+                mod3_d: "$100K–$400K फंडेड अकाउंट पास करने और अपनी कैपिटल को सुरक्षित रूप से बढ़ाने का सटीक गणित।",
+                prof_badge: "कम्युनिटी परफॉरमेंस और प्रूफ",
+                prof_heading: 'NGL छात्रों का <span class="text-cyber-cyan">प्रॉफिट टर्मिनल</span> और पेआउट',
+                prof_sub: "उन ट्रेडर्स के नतीजे जिन्होंने भटकना बंद किया और $10 की NGL सिंगल स्ट्रेटेजी पर भरोसा किया। सभी लाइव प्रूफ हमारे टेलीग्राम पर देखें।",
+                prof_tg_btn: "टेलीग्राम पर लाइव प्रूफ देखें (@NGLTRADER)",
+                prof_stat1: "छात्रों का कुल मुनाफा",
+                prof_stat2: "औसत विन रेट",
+                prof_stat3: "औसत R:R अनुपात",
+                prof_stat4: "सक्रिय NGL ट्रेडर्स",
+                rev1: '"NGL TRADER से पहले मैंने 4 अकाउंट खो दिए थे। पिछले महीने $10 दिए और सिर्फ Gold पर लिक्विडिटी स्वीप नियम अपनाया—पहला $6.4K हफ्ता कमाया।"',
+                rev2: '"दिन में सिर्फ एक सेटअप ट्रेड करके 11 दिनों में $200K प्रॉप चैलेंज के दोनों फेज पास किए। मेरी ज़िंदगी का सबसे बेहतरीन $10 निवेश।"',
+                rev3: '"कोई उलझाने वाले इंडिकेटर नहीं। सिर्फ शुद्ध लिक्विडिटी और सटीक एंट्री। मेरी ट्रेडिंग यात्रा आखिरकार पूरी हो गई।"',
+                prof_cta_t: "क्या आप लाइव पेआउट वीडियो और प्रूफ देखना चाहते हैं?",
+                prof_cta_d: "सीधे टेलीग्राम पर NGL TRADER को मैसेज करें या अभी $10 में स्ट्रेटेजी अनलॉक करें।",
+                tg_direct_btn: "टेलीग्राम प्रूफ",
+                sim_badge: "इंटरैक्टिव वेल्थ इंजन",
+                sim_title: '<span class="text-cyber-cyan">$1,000,000+</span> तक पहुंचने का गणित देखें',
+                sim_desc: "अपनी शुरुआती पूंजी, प्रति ट्रेड रिस्क और मासिक जीत को समायोजित करें और देखें कि 1:4 R:R कंपाउंडिंग कैसे काम करती है।",
+                sim_start_lbl: "शुरुआती अकाउंट बैलेंस",
+                sim_risk_lbl: "प्रति ट्रेड रिस्क (%)",
+                sim_wins_lbl: "मासिक +4R जीत",
+                sim_months_lbl: "कंपाउंडिंग समय (महीने)",
+                sim_proj_eq: "अनुमानित कुल पूंजी",
+                sim_peak_mo: "पीक पर मासिक लाभ",
+                faq_title: "अक्सर पूछे जाने वाले प्रश्न और नियम",
+                faq1_q: "क्या यह एकल रणनीति शुरुआती (Beginners) लोगों के लिए काम करती है?",
+                faq1_a: "हाँ। चूंकि आप दर्जनों इंडिकेटर्स के बजाय केवल एक स्पष्ट और दोहराने योग्य पैटर्न पर ध्यान केंद्रित करते हैं, इसलिए नए ट्रेडर्स इसे बहुत तेज़ी से सीखते हैं।",
+                faq2_q: "यह किन मार्केट्स और टाइमफ्रेम पर काम करती है?",
+                faq2_a: "प्राइस एक्शन हर जगह समान है। NGL सिंगल स्ट्रेटेजी Gold (XAUUSD), Nasdaq (NAS100), फॉरेक्स पेयर्स और Bitcoin/Crypto पर M5, M15 और H1 टाइमफ्रेम में शानदार काम करती है।",
+                faq3_q: "मैं $10 का भुगतान कैसे करूं और तुरंत एक्सेस कैसे पाऊं?",
+                faq3_a: '"Unlock $10" बटन पर क्लिक करें, चेकआउट में दिए गए आधिकारिक NGL TRADER वॉलेट पते पर $10 (USDT/USDC/ETH) भेजें, अपना ईमेल दर्ज करें और तुरंत कोर्स प्राप्त करें।',
+                final_cta_t: "आज ही अपनी ट्रेडिंग यात्रा को पूरा करें।",
+                final_cta_d: "सिर्फ एक बार $10 दें। पूरा NGL TRADER सिंगल-स्ट्रेटेजी सिस्टम डाउनलोड करें और फिर कभी कोई दूसरा कोर्स न खरीदें।",
+                footer_disclaimer: "जोखिम अस्वीकरण: वित्तीय बाज़ारों में ट्रेडिंग में उच्च जोखिम शामिल है। पिछला प्रदर्शन भविष्य के परिणामों की गारंटी नहीं देता है। जिम्मेदारी से ट्रेड करें।",
+                modal_badge: "NGL TRADER डायरेक्ट $10 पेमेंट",
+                modal_title: "सिंगल स्ट्रेटेजी अनलॉक करें",
+                modal_sub: "नीचे दिए गए आधिकारिक NGL TRADER पते पर ठीक $10 (USDT / USDC / ETH) भेजें और टेलीग्राम पर पेमेंट प्रूफ भेजें।",
+                copy_btn: "कॉपी करें",
+                form_name: "आपका पूरा नाम",
+                form_email: "डिलीवरी ईमेल",
+                form_tx: "ट्रांजेक्शन हैश / TXID",
+                form_submit: "$10 पेमेंट सत्यापित करें और अनलॉक करें",
+                modal_tg_send: "सीधे टेलीग्राम पर स्क्रीनशॉट भेजें"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'hi' : 'en';
+            document.getElementById('lang-label').textContent = currentLang === 'en' ? 'हिंदी / EN' : 'EN / हिंदी';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            });
+            showToast(
+                currentLang === 'hi' ? 'भाषा बदली गई: हिंदी' : 'Language Switched: English',
+                currentLang === 'hi' ? 'अब पूरी वेबसाइट हिंदी में उपलब्ध है।' : 'Full website translated to English.'
+            );
+        }
+
+        // 0.5 Multi-Page Router Logic
+        function navigatePage(pageId) {
+            document.querySelectorAll('.page-view').forEach(view => {
+                view.classList.add('hidden');
+            });
+            const target = document.getElementById('page-' + pageId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            // Update active button styles
+            document.querySelectorAll('.page-nav-btn').forEach(btn => {
+                if (btn.getAttribute('data-page-btn') === pageId) {
+                    btn.classList.add('bg-cyber-cyan/15', 'text-cyber-cyan', 'font-bold');
+                    btn.classList.remove('text-slate-300');
+                } else {
+                    btn.classList.remove('bg-cyber-cyan/15', 'text-cyber-cyan', 'font-bold');
+                    btn.classList.add('text-slate-300');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (pageId === 'simulator') {
+                setTimeout(updateSimulator, 50);
+            }
+        }
+
+        // Copy Wallet Address Function (Uses document.execCommand('copy') for iFrame safety)
+        function copyWalletAddress() {
+            const addr = document.getElementById('wallet-address-text').textContent.trim();
+            const tempInput = document.createElement('textarea');
+            tempInput.value = addr;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast(
+                    currentLang === 'hi' ? 'वॉलेट पता कॉपी हो गया!' : 'WALLET ADDRESS COPIED',
+                    addr
+                );
+            } catch (err) {
+                showToast('Copy Error', 'Please select and copy the address manually.');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        // 1. Custom Toast Notification System (Zero alert() usage)
+        function showToast(title, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto max-w-sm rounded-xl bg-cyber-card border border-cyber-emerald/50 p-4 shadow-2xl shadow-cyber-emerald/20 backdrop-blur-xl transform transition-all duration-300 translate-y-4 opacity-0';
+            toast.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyber-emerald/20 text-cyber-emerald flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <h4 class="font-display font-bold text-white text-sm">${title}</h4>
+                        <p class="text-xs text-slate-300 mt-1 break-all">${message}</p>
+                    </div>
+                </div>
+            `;
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            });
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+
+        // 2. Checkout Modal Logic
+        const modal = document.getElementById('checkout-modal');
+        function openCheckoutModal() {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function closeCheckoutModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeCheckoutModal();
+        });
+        function handleCheckoutSubmit(e) {
+            e.preventDefault();
+            closeCheckoutModal();
+            showToast(
+                currentLang === 'hi' ? 'एक्सेस अनलॉक हो गया // NGL TRADER' : 'ACCESS UNLOCKED // WELCOME TO NGL TRADER',
+                currentLang === 'hi'
+                    ? 'आपका $10 सिंगल-स्ट्रेटेजी मास्टरक्लास लिंक आपके ईमेल पर भेज दिया गया है।'
+                    : 'Your $10 Single-Strategy Masterclass credentials have been dispatched to your inbox.'
+            );
+            e.target.reset();
+        }
+
+        // 3. Futuristic Background Particle & Grid Animation
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let particles = [];
+
+        function resizeBgCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeBgCanvas);
+        resizeBgCanvas();
+
+        for (let i = 0; i < 45; i++) {
+            particles.push({
+                x: Math.random() * bgCanvas.width,
+                y: Math.random() * bgCanvas.height,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                size: Math.random() * 2 + 0.5
+            });
+        }
+
+        function animateBackground() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            
+            // Subtle cyber grid
+            bgCtx.strokeStyle = 'rgba(0, 240, 255, 0.03)';
+            bgCtx.lineWidth = 1;
+            const gridSize = 60;
+            for (let x = 0; x < bgCanvas.width; x += gridSize) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(x, 0);
+                bgCtx.lineTo(x, bgCanvas.height);
+                bgCtx.stroke();
+            }
+            for (let y = 0; y < bgCanvas.height; y += gridSize) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, y);
+                bgCtx.lineTo(bgCanvas.width, y);
+                bgCtx.stroke();
+            }
+
+            // Nodes & Connections
+            particles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > bgCanvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > bgCanvas.height) p.vy *= -1;
+
+                bgCtx.fillStyle = idx % 2 === 0 ? 'rgba(0, 240, 255, 0.5)' : 'rgba(0, 255, 136, 0.5)';
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                bgCtx.fill();
+
+                for (let j = idx + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 130) {
+                        bgCtx.strokeStyle = `rgba(0, 240, 255, ${0.12 * (1 - dist / 130)})`;
+                        bgCtx.beginPath();
+                        bgCtx.moveTo(p.x, p.y);
+                        bgCtx.lineTo(p2.x, p2.y);
+                        bgCtx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animateBackground);
+        }
+
+        // 4. Hero Live Strategy Liquidity-Sweep Candlestick Animation
+        const stratCanvas = document.getElementById('strategy-chart');
+        const stratCtx = stratCanvas.getContext('2d');
+        let tick = 0;
+
+        function drawStrategyChart() {
+            const rect = stratCanvas.getBoundingClientRect();
+            if (stratCanvas.width !== rect.width || stratCanvas.height !== rect.height) {
+                stratCanvas.width = rect.width;
+                stratCanvas.height = rect.height;
+            }
+            const w = stratCanvas.width;
+            const h = stratCanvas.height;
+            stratCtx.clearRect(0, 0, w, h);
+
+            // Liquidity Line
+            const liqY = h * 0.68;
+            stratCtx.setLineDash([5, 5]);
+            stratCtx.strokeStyle = 'rgba(244, 63, 94, 0.6)';
+            stratCtx.beginPath();
+            stratCtx.moveTo(0, liqY);
+            stratCtx.lineTo(w, liqY);
+            stratCtx.stroke();
+            stratCtx.setLineDash([]);
+
+            stratCtx.fillStyle = 'rgba(244, 63, 94, 0.85)';
+            stratCtx.font = '10px JetBrains Mono';
+            stratCtx.fillText('SELL-SIDE LIQUIDITY POOL', 8, liqY - 6);
+
+            // Take Profit Zone
+            const tpY = h * 0.18;
+            stratCtx.fillStyle = 'rgba(0, 255, 136, 0.08)';
+            stratCtx.fillRect(w * 0.52, tpY, w * 0.45, liqY - tpY);
+            stratCtx.strokeStyle = 'rgba(0, 255, 136, 0.5)';
+            stratCtx.strokeRect(w * 0.52, tpY, w * 0.45, liqY - tpY);
+
+            // Animated Price Path (Sweep below liquidity, then explosive rally)
+            const points = [
+                [0.05, 0.45], [0.14, 0.55], [0.22, 0.48], [0.30, 0.62],
+                [0.38, 0.58], [0.46, 0.82], // Liquidity sweep wick!
+                [0.54, 0.60], // Entry trigger
+                [0.64, 0.42], [0.74, 0.30], [0.85, 0.22], [0.95, 0.16]
+            ];
+
+            const progress = ((tick % 180) / 180);
+            const visibleCount = Math.max(2, Math.floor(progress * points.length) + 1);
+
+            stratCtx.lineWidth = 2.5;
+            stratCtx.strokeStyle = '#00F0FF';
+            stratCtx.beginPath();
+            for (let i = 0; i < Math.min(visibleCount, points.length); i++) {
+                const px = points[i][0] * w;
+                const py = points[i][1] * h;
+                if (i === 0) stratCtx.moveTo(px, py);
+                else stratCtx.lineTo(px, py);
+            }
+            stratCtx.stroke();
+
+            // Sniper Entry Dot
+            if (visibleCount >= 7) {
+                const ex = points[6][0] * w;
+                const ey = points[6][1] * h;
+                stratCtx.fillStyle = '#00FF88';
+                stratCtx.beginPath();
+                stratCtx.arc(ex, ey, 5, 0, Math.PI * 2);
+                stratCtx.fill();
+                stratCtx.fillStyle = '#FFFFFF';
+                stratCtx.font = 'bold 10px JetBrains Mono';
+                stratCtx.fillText('NGL ENTRY', ex + 8, ey + 4);
+            }
+
+            tick++;
+            requestAnimationFrame(drawStrategyChart);
+        }
+
+        // 5. Interactive Millionaire Compounding Calculator & Curve
+        const inputStart = document.getElementById('input-start');
+        const inputRisk = document.getElementById('input-risk');
+        const inputWins = document.getElementById('input-wins');
+        const inputMonths = document.getElementById('input-months');
+        const curveCanvas = document.getElementById('equity-curve-canvas');
+        const curveCtx = curveCanvas ? curveCanvas.getContext('2d') : null;
+
+        function formatCurrency(num) {
+            if (num >= 1e9) return '$' + (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return '$' + (num / 1e6).toFixed(2) + 'M';
+            return '$' + Math.round(num).toLocaleString('en-US');
+        }
+
+        function updateSimulator() {
+            if (!inputStart || !inputRisk || !inputWins || !inputMonths) return;
+            const start = parseFloat(inputStart.value);
+            const riskPct = parseFloat(inputRisk.value) / 100;
+            const netWins = parseInt(inputWins.value);
+            const months = parseInt(inputMonths.value);
+
+            document.getElementById('val-start').textContent = '$' + start.toLocaleString();
+            document.getElementById('val-risk').textContent = (riskPct * 100).toFixed(1) + '%';
+            document.getElementById('val-wins').textContent = netWins + ' Wins';
+            document.getElementById('val-months').textContent = months + ' Months';
+
+            // 1:4 Risk-to-Reward compounding per net win
+            const rewardMultiplier = 1 + (riskPct * 4);
+            let equity = start;
+            const history = [equity];
+
+            for (let m = 1; m <= months; m++) {
+                for (let w = 0; w < netWins; w++) {
+                    equity *= rewardMultiplier;
+                }
+                history.push(equity);
+            }
+
+            const prevMonthEquity = history[history.length - 2] || start;
+            const peakMonthlyGain = equity - prevMonthEquity;
+            const roi = ((equity - start) / start) * 100;
+
+            document.getElementById('projected-balance').textContent = formatCurrency(equity);
+            document.getElementById('projected-roi').textContent = '+' + Math.round(roi).toLocaleString() + '%';
+            document.getElementById('monthly-peak').textContent = formatCurrency(peakMonthlyGain);
+
+            drawEquityCurve(history);
+        }
+
+        function drawEquityCurve(data) {
+            if (!curveCanvas || !curveCtx) return;
+            const rect = curveCanvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+            curveCanvas.width = rect.width;
+            curveCanvas.height = rect.height;
+            const w = curveCanvas.width;
+            const h = curveCanvas.height;
+            curveCtx.clearRect(0, 0, w, h);
+
+            const minVal = Math.min(...data);
+            const maxVal = Math.max(...data);
+            const range = maxVal - minVal || 1;
+            const padX = 16;
+            const padY = 20;
+
+            // Subtle horizontal grid lines
+            curveCtx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+            curveCtx.lineWidth = 1;
+            for (let i = 1; i <= 3; i++) {
+                const gy = padY + ((h - padY * 2) * i) / 4;
+                curveCtx.beginPath();
+                curveCtx.moveTo(padX, gy);
+                curveCtx.lineTo(w - padX, gy);
+                curveCtx.stroke();
+            }
+
+            // Build coordinates
+            const coords = data.map((val, idx) => {
+                const x = padX + (idx / Math.max(1, data.length - 1)) * (w - padX * 2);
+                const y = h - padY - ((val - minVal) / range) * (h - padY * 2);
+                return { x, y };
+            });
+
+            // Area fill gradient
+            const areaGrad = curveCtx.createLinearGradient(0, padY, 0, h - padY);
+            areaGrad.addColorStop(0, 'rgba(0, 255, 136, 0.28)');
+            areaGrad.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
+
+            curveCtx.beginPath();
+            curveCtx.moveTo(coords[0].x, h - padY);
+            coords.forEach(pt => curveCtx.lineTo(pt.x, pt.y));
+            curveCtx.lineTo(coords[coords.length - 1].x, h - padY);
+            curveCtx.closePath();
+            curveCtx.fillStyle = areaGrad;
+            curveCtx.fill();
+
+            // Stroke line gradient
+            const lineGrad = curveCtx.createLinearGradient(0, 0, w, 0);
+            lineGrad.addColorStop(0, '#00F0FF');
+            lineGrad.addColorStop(1, '#00FF88');
+
+            curveCtx.strokeStyle = lineGrad;
+            curveCtx.lineWidth = 3;
+            curveCtx.beginPath();
+            coords.forEach((pt, idx) => {
+                if (idx === 0) curveCtx.moveTo(pt.x, pt.y);
+                else curveCtx.lineTo(pt.x, pt.y);
+            });
+            curveCtx.stroke();
+
+            // Data point nodes
+            coords.forEach((pt, idx) => {
+                if (idx === 0 || idx === coords.length - 1 || idx % 2 === 0) {
+                    curveCtx.fillStyle = idx === coords.length - 1 ? '#00FF88' : '#00F0FF';
+                    curveCtx.beginPath();
+                    curveCtx.arc(pt.x, pt.y, idx === coords.length - 1 ? 5 : 3, 0, Math.PI * 2);
+                    curveCtx.fill();
+                }
+            });
+        }
+
+        // Attach Simulator Listeners
+        [inputStart, inputRisk, inputWins, inputMonths].forEach(el => {
+            if (el) el.addEventListener('input', updateSimulator);
+        });
+        window.addEventListener('resize', () => {
+            if (!document.getElementById('page-simulator').classList.contains('hidden')) {
+                updateSimulator();
+            }
+        });
+
+        // Start all animations safely on window load
+        window.onload = function () {
+            animateBackground();
+            drawStrategyChart();
+            updateSimulator();
+        };
+    </script>
+</body>
+</html>
